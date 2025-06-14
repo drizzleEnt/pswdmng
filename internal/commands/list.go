@@ -1,15 +1,7 @@
 package commands
 
-import (
-	"fmt"
+import "github.com/spf13/cobra"
 
-	"github.com/spf13/cobra"
-)
+func (r *Root) list(cmd *cobra.Command, args []string) {
 
-var listcmd = &cobra.Command{
-	Use:   "list",
-	Short: "get rows list from password manager",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("list cmd")
-	},
 }

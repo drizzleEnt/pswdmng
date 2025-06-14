@@ -1,9 +1,10 @@
 package repository
 
 type Repository interface {
-	CheckExist() (bool, error)
+	CheckExist() (bool, []string, error)
 	Add()
 	Get()
-	List()
+	List(login string) ([]string, error)
 	Remove()
+	CreateFile(login string) error
 }

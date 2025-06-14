@@ -1,15 +1,7 @@
 package commands
 
-import (
-	"fmt"
+import "github.com/spf13/cobra"
 
-	"github.com/spf13/cobra"
-)
+func (r *Root) remove(cmd *cobra.Command, args []string) {
 
-var removecmd = &cobra.Command{
-	Use:   "remove",
-	Short: "remove row from password manager",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("remove cmd")
-	},
 }
