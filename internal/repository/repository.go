@@ -2,7 +2,7 @@ package repository
 
 type Repository interface {
 	CheckExist() (bool, []string, error)
-	Add()
+	Add(account string, login string, url string) error
 	Get()
 	List(login string) ([]string, error)
 	Remove()

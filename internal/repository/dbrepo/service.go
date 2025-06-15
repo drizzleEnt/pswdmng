@@ -40,8 +40,19 @@ func (r *repo) CreateFile(login string) error {
 }
 
 // Add implements repository.Repository.
-func (r *repo) Add() {
-	panic("unimplemented")
+func (r *repo) Add(account string, login string, url string) error {
+	db, err := db(account)
+	if err != nil {
+		return err
+	}
+	defer closeDB(db)
+
+	_, err = db.Exec(`INSERT INTO passwords (login, url, password) VALUES ($1, $2, $3)`, login, url, "123")
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // CheckExist implements repository.Repository.
@@ -69,6 +80,7 @@ func (r *repo) List(login string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer closeDB(db)
 
 	rows, err := db.Query(`SELECT url, login FROM passwords`)
 	if err != nil {
@@ -83,7 +95,7 @@ func (r *repo) List(login string) ([]string, error) {
 			return nil, err
 		}
 
-		entries = append(entries, strings.Join([]string{url, login}, " "))
+		entries = append(entries, strings.Join([]string{url, login}, " : "))
 
 	}
 

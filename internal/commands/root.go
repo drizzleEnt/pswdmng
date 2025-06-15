@@ -30,19 +30,18 @@ func (r *Root) Execute() {
 }
 
 func (r *Root) InitCommands() {
-	f := factory.NewCommandFactory()
 
-	r.rootCmd = f.MakeRootCommand(func(cmd *cobra.Command, args []string) {
+	r.rootCmd = factory.MakeRootCommand(func(cmd *cobra.Command, args []string) {
 		fmt.Println("root cmd")
 	})
 
 	cmds := []*cobra.Command{
-		f.MakeInitCommand(r.init),
-		f.MakeAddCommand(r.add),
-		f.MakeGetCommand(r.get),
-		f.MakeListCommand(r.list),
-		f.MakeLoginCommand(r.login),
-		f.MakeRemoveCommand(r.remove),
+		factory.MakeInitCommand(r.init),
+		factory.MakeAddCommand(r.add),
+		factory.MakeGetCommand(r.get),
+		factory.MakeListCommand(r.list),
+		factory.MakeLoginCommand(r.login),
+		factory.MakeRemoveCommand(r.remove),
 	}
 	r.cmds = cmds
 
