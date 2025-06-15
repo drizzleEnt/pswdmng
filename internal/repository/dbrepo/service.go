@@ -70,12 +70,24 @@ func (r *repo) CheckExist() (bool, []string, error) {
 }
 
 // Get implements repository.Repository.
-func (r *repo) Get() {
-	panic("unimplemented")
+func (r *repo) Get(account string, url string, login string) (string, error) {
+	db, err := db(account)
+	if err != nil {
+		return "", err
+	}
+	defer closeDB(db)
+
+	var dbPswd string
+	err = db.QueryRow(`SELECT password FROM passwords WHERE url = $1 AND login = $2`, url, login).Scan(&dbPswd)
+	if err != nil {
+		return "", err
+	}
+
+	return dbPswd, nil
 }
 
 // List implements repository.Repository.
-func (r *repo) List(login string) ([]string, error) {
+func (r *repo) List(login string) ([][]string, error) {
 	db, err := db(login)
 	if err != nil {
 		return nil, err
@@ -88,15 +100,17 @@ func (r *repo) List(login string) ([]string, error) {
 	}
 	defer rows.Close()
 
-	entries := make([]string, 0, 0)
+	entries := make([][]string, 0, 0)
 	for rows.Next() {
+		dbRows := make([]string, 0, 2)
 		var login, url string
 		if err := rows.Scan(&url, &login); err != nil {
 			return nil, err
 		}
 
-		entries = append(entries, strings.Join([]string{url, login}, " : "))
-
+		dbRows = append(dbRows, login)
+		dbRows = append(dbRows, url)
+		entries = append(entries, dbRows)
 	}
 
 	return entries, nil

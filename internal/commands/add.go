@@ -7,15 +7,15 @@ import (
 )
 
 func (r *Root) add(cmd *cobra.Command, args []string) {
-	ok, accounts := getExistingLogins(r)
+	ok, accounts := getExistingAccounts(r)
 	if !ok {
 		fmt.Println("At first you need to initialize your first account")
 		return
 	}
 
-	index := getChoosenAccount(accounts)
+	index := getChosenAccount(accounts)
 
-	fmt.Printf("current account: %v\n", accounts[index-1])
+	fmt.Printf("current account: %v\n", accounts[index])
 
 	login, err := cmd.Flags().GetString("login")
 	if err != nil {
@@ -29,7 +29,7 @@ func (r *Root) add(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	if err := r.repo.Add(accounts[index-1], login, url); err != nil {
+	if err := r.repo.Add(accounts[index], login, url); err != nil {
 		fmt.Printf("err.Error(): %v\n", err.Error())
 		return
 	}

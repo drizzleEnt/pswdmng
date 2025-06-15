@@ -17,14 +17,14 @@ func (r *Root) init(cmd *cobra.Command, args []string) {
 	}
 
 	//check exit
-	ok, logins := getExistingLogins(r)
+	ok, accounts := getExistingAccounts(r)
 
 	if !ok {
 		createNewAccount(r)
 	} else {
-		index := getChoosenAccount(logins)
+		index := getChosenAccount(accounts)
 
-		fmt.Printf("current account: %v\n", logins[index-1])
+		fmt.Printf("current account: %v\n", accounts[index])
 
 		psw, err := getPassword()
 		if err != nil {
@@ -33,15 +33,17 @@ func (r *Root) init(cmd *cobra.Command, args []string) {
 		}
 		fmt.Printf("psw: %v\n", string(psw))
 
-		entries, err := r.repo.List(logins[index-1])
+		entries, err := r.repo.List(accounts[index])
 		if err != nil {
 			fmt.Printf("err.Error(): %v\n", err.Error())
 			os.Exit(1)
 		}
+
 		fmt.Printf("Url | Login\n")
 		for i, e := range entries {
-			fmt.Printf("%v: %v\n", i+1, e)
+			fmt.Printf("%v: %v - %v\n", i+1, e[1], e[0])
 		}
+
 		return
 	}
 
@@ -65,13 +67,13 @@ func createNewAccount(r *Root) {
 	}
 }
 
-func getChoosenAccount(logins []string) int {
-	if len(logins) == 1 {
+func getChosenAccount(accounts []string) int {
+	if len(accounts) == 1 {
 		return 1
 	}
 
 	fmt.Println("founded accounts:")
-	for i, l := range logins {
+	for i, l := range accounts {
 		fmt.Printf("%v: %v\n", i+1, l)
 	}
 
@@ -82,15 +84,37 @@ func getChoosenAccount(logins []string) int {
 		os.Exit(1)
 	}
 
-	index, err := strconv.Atoi(chosenLogin)
+	inputIndex, err := strconv.Atoi(chosenLogin)
 	if err != nil {
 		fmt.Printf("err.Error(): %v\n", err.Error())
 		os.Exit(1)
 	}
-	return index
+
+	return inputIndex - 1
 }
 
-func getExistingLogins(r *Root) (bool, []string) {
+func getChosenLogin(logins [][]string) int {
+	if len(logins) == 1 {
+		return 0
+	}
+
+	fmt.Print("Enter login number: ")
+	chosenLogin, err := getInput()
+	if err != nil {
+		fmt.Printf("err.Error(): %v\n", err.Error())
+		os.Exit(1)
+	}
+
+	inputIndex, err := strconv.Atoi(chosenLogin)
+	if err != nil {
+		fmt.Printf("err.Error(): %v\n", err.Error())
+		os.Exit(1)
+	}
+
+	return inputIndex - 1
+}
+
+func getExistingAccounts(r *Root) (bool, []string) {
 	fmt.Println("Check existing passwords files")
 
 	ok, logins, err := r.repo.CheckExist()
