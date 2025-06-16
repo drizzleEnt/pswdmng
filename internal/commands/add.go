@@ -2,20 +2,17 @@ package commands
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 )
 
 func (r *Root) add(cmd *cobra.Command, args []string) {
-	ok, accounts := getExistingAccounts(r)
-	if !ok {
-		fmt.Println("At first you need to initialize your first account")
-		return
+	account, _, err := getAccountAndPassword(r)
+	if err != nil {
+		fmt.Printf("Error: %v\n", err.Error())
+		os.Exit(1)
 	}
-
-	index := getChosenAccount(accounts)
-
-	fmt.Printf("current account: %v\n", accounts[index])
 
 	login, err := cmd.Flags().GetString("login")
 	if err != nil {
@@ -29,7 +26,7 @@ func (r *Root) add(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	if err := r.repo.Add(accounts[index], login, url); err != nil {
+	if err := r.repo.Add(account, login, url); err != nil {
 		fmt.Printf("err.Error(): %v\n", err.Error())
 		return
 	}

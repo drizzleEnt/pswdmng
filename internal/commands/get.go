@@ -8,24 +8,13 @@ import (
 )
 
 func (r *Root) get(cmd *cobra.Command, args []string) {
-	ok, accounts := getExistingAccounts(r)
-	if !ok {
-		fmt.Println("At first you need to initialize your first account")
-		return
-	}
-
-	accountIndex := getChosenAccount(accounts)
-
-	fmt.Printf("current account: %v\n", accounts[accountIndex])
-
-	psw, err := getPassword()
+	account, _, err := getAccountAndPassword(r)
 	if err != nil {
-		fmt.Printf("err.Error(): %v\n", err.Error())
+		fmt.Printf("Error: %v\n", err.Error())
 		os.Exit(1)
 	}
-	fmt.Printf("psw: %v\n", string(psw))
 
-	entries, err := r.repo.List(accounts[accountIndex])
+	entries, err := r.repo.List(account)
 	if err != nil {
 		fmt.Printf("err.Error(): %v\n", err.Error())
 		os.Exit(1)
@@ -47,7 +36,7 @@ func (r *Root) get(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	pswd, err := r.repo.Get(accounts[accountIndex], entries[rowIndex][1], entries[rowIndex][0])
+	pswd, err := r.repo.Get(account, entries[rowIndex][1], entries[rowIndex][0])
 	if err != nil {
 		fmt.Printf("err.Error(): %v\n", err.Error())
 		os.Exit(1)

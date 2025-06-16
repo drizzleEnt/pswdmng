@@ -46,10 +46,6 @@ func (r *Root) init(cmd *cobra.Command, args []string) {
 
 		return
 	}
-
-	fmt.Println("Passwords files founded")
-	fmt.Println("Enter master password for access to account:")
-	fmt.Println("init cmd")
 }
 
 func createNewAccount(r *Root) {
