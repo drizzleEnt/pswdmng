@@ -20,7 +20,7 @@ func (r *Root) get(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	rowIndex := getChosenLogin(entries)
+	rowIndex, err := getChosenItem(entries)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err.Error())
 		os.Exit(1)

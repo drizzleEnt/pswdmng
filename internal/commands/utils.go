@@ -73,27 +73,6 @@ func getChosenItem(items []domain.UserInfo) (int, error) {
 	return itemIndex - 1, nil
 }
 
-func getChosenLogin(logins []domain.UserInfo) int {
-	if len(logins) == 1 {
-		return 0
-	}
-
-	fmt.Print("Enter login number: ")
-	chosenLogin, err := getInput()
-	if err != nil {
-		fmt.Printf("err.Error(): %v\n", err.Error())
-		os.Exit(1)
-	}
-
-	inputIndex, err := strconv.Atoi(chosenLogin)
-	if err != nil {
-		fmt.Printf("err.Error(): %v\n", err.Error())
-		os.Exit(1)
-	}
-
-	return inputIndex - 1
-}
-
 func getExistingAccounts(r *Root) (bool, []domain.UserInfo) {
 	fmt.Println("Check existing passwords files")
 

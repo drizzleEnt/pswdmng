@@ -20,7 +20,11 @@ func (r *Root) remove(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	rowIndex := getChosenLogin(entries)
+	rowIndex, err := getChosenItem(entries)
+	if err != nil {
+		fmt.Printf("Error: %v\n", err.Error())
+		os.Exit(1)
+	}
 
 	if err := r.repo.Remove(account, entries[rowIndex].Url, entries[rowIndex].Login); err != nil {
 		fmt.Printf("Error: %v\n", err.Error())
