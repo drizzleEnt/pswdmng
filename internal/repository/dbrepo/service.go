@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"pswdmng/internal/domain"
 	"pswdmng/internal/repository"
 	"strings"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -29,7 +31,8 @@ func (r *repo) CreateFile(login string) error {
 	_, err = db.Exec(`CREATE TABLE passwords(
 		url text,
 		login text,
-		password text
+		password text,
+		deleted_at bigint
 	)`)
 
 	if err != nil {
@@ -47,16 +50,20 @@ func (r *repo) Add(account string, login string, url string) error {
 	}
 	defer closeDB(db)
 
-	_, err = db.Exec(`INSERT INTO passwords (login, url, password) VALUES ($1, $2, $3)`, login, url, "123")
+	query := `
+	INSERT INTO passwords
+	(login, url, password) 
+	VALUES ($1, $2, $3)`
+
+	_, err = db.Exec(query, login, url, "123")
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
 // CheckExist implements repository.Repository.
-func (r *repo) CheckExist() (bool, []string, error) {
+func (r *repo) CheckExist() (bool, []domain.UserInfo, error) {
 	logins, err := r.getExistFiles()
 	if err != nil {
 		return false, nil, err
@@ -77,9 +84,15 @@ func (r *repo) Get(account string, url string, login string) (string, error) {
 	}
 	defer closeDB(db)
 
+	query := `
+	SELECT 
+	password 
+	FROM passwords 
+	WHERE 
+	(url = $1 AND login = $2) AND deleted_at IS NULL`
+
 	var dbPswd string
-	err = db.QueryRow(`SELECT password FROM passwords WHERE url = $1 AND login = $2`, url, login).Scan(&dbPswd)
-	if err != nil {
+	if err := db.QueryRow(query, url, login).Scan(&dbPswd); err != nil {
 		return "", err
 	}
 
@@ -87,38 +100,61 @@ func (r *repo) Get(account string, url string, login string) (string, error) {
 }
 
 // List implements repository.Repository.
-func (r *repo) List(login string) ([][]string, error) {
+func (r *repo) List(login string) ([]domain.UserInfo, error) {
 	db, err := db(login)
 	if err != nil {
 		return nil, err
 	}
 	defer closeDB(db)
 
-	rows, err := db.Query(`SELECT url, login FROM passwords`)
+	query := `
+	SELECT 
+	url, login 
+	FROM passwords
+	WHERE deleted_at IS NULL`
+
+	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	entries := make([][]string, 0, 0)
+	var entries []domain.UserInfo
+
+	fmt.Println("before next")
 	for rows.Next() {
-		dbRows := make([]string, 0, 2)
-		var login, url string
-		if err := rows.Scan(&url, &login); err != nil {
+		var userInfo domain.UserInfo
+
+		if err := rows.Scan(&userInfo.Url, &userInfo.Login); err != nil {
 			return nil, err
 		}
 
-		dbRows = append(dbRows, login)
-		dbRows = append(dbRows, url)
-		entries = append(entries, dbRows)
+		entries = append(entries, userInfo)
 	}
 
 	return entries, nil
 }
 
 // Remove implements repository.Repository.
-func (r *repo) Remove() {
-	panic("unimplemented")
+func (r *repo) Remove(account string, url string, login string) error {
+	db, err := db(account)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	now := time.Now().Unix()
+	query := `
+	UPDATE passwords 
+	SET 
+	deleted_at = $1
+	WHERE url = $2 AND login = $3`
+
+	if _, err := db.Exec(query, now, url, login); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func db(login string) (*sql.DB, error) {
@@ -152,7 +188,7 @@ func closeDB(db *sql.DB) {
 	db.Close()
 }
 
-func (r *repo) getExistFiles() ([]string, error) {
+func (r *repo) getExistFiles() ([]domain.UserInfo, error) {
 	storeDir, err := getStoreDirPath()
 	if err != nil {
 		return nil, err
@@ -173,10 +209,11 @@ func (r *repo) getExistFiles() ([]string, error) {
 		}
 	}
 
-	logins := make([]string, 0, len(dirEntry))
+	logins := make([]domain.UserInfo, 0, len(dirEntry))
 	for _, entry := range dirEntry {
-		foundedLogins := strings.Split(entry.Name(), "_")
-		logins = append(logins, foundedLogins[0])
+		var userInfo domain.UserInfo
+		userInfo.Login = strings.Split(entry.Name(), "_")[0]
+		logins = append(logins, userInfo)
 	}
 
 	return logins, nil
