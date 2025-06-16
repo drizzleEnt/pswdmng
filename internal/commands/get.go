@@ -31,6 +31,11 @@ func (r *Root) get(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
+	if len(entries) == 0 {
+		fmt.Printf("You did not add any login\n")
+		return
+	}
+
 	fmt.Printf("Url | Login\n")
 	for i, e := range entries {
 		fmt.Printf("%v: %v - %v\n", i+1, e[1], e[0])
@@ -48,6 +53,6 @@ func (r *Root) get(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	fmt.Printf("pswd: %v\n", pswd)
+	fmt.Printf("db pswd: %v\n", pswd)
 	return
 }

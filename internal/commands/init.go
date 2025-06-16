@@ -69,7 +69,7 @@ func createNewAccount(r *Root) {
 
 func getChosenAccount(accounts []string) int {
 	if len(accounts) == 1 {
-		return 1
+		return 0
 	}
 
 	fmt.Println("founded accounts:")
