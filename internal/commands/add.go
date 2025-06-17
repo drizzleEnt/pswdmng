@@ -26,7 +26,7 @@ func (r *Root) add(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	if err := r.repo.Add(account, login, url); err != nil {
+	if err := r.repo.Add(account, login, url, "123"); err != nil {
 		fmt.Printf("err.Error(): %v\n", err.Error())
 		return
 	}

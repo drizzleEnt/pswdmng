@@ -1,10 +1,10 @@
-package checker
+package files
 
 import (
 	"pswdmng/internal/service"
 )
 
-var _ service.Checker = (*checkerService)(nil)
+var _ service.FileService = (*checkerService)(nil)
 
 type checkerService struct {
 }

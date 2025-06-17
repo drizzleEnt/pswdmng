@@ -46,7 +46,7 @@ func (r *Root) init(cmd *cobra.Command, args []string) {
 }
 
 func createNewAccount(r *Root) error {
-	fmt.Println("psw files not exist")
+	fmt.Println("Passwords files not exist")
 	fmt.Println("Create login")
 	login, err := getInput()
 	if err != nil {

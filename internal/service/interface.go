@@ -1,4 +1,8 @@
 package service
 
-type Checker interface {
+type FileService interface {
+}
+
+type Generator interface {
+	
 }
