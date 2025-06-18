@@ -121,7 +121,6 @@ func (r *repo) List(login string) ([]domain.UserInfo, error) {
 
 	var entries []domain.UserInfo
 
-	fmt.Println("before next")
 	for rows.Next() {
 		var userInfo domain.UserInfo
 

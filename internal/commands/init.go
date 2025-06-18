@@ -21,6 +21,7 @@ func (r *Root) init(cmd *cobra.Command, args []string) {
 	if !ok {
 		createNewAccount(r)
 	} else {
+		outputItems(accounts)
 		index, err := getChosenItem(accounts)
 		if err != nil {
 			fmt.Printf("Error: %v\n", err.Error())
@@ -29,7 +30,7 @@ func (r *Root) init(cmd *cobra.Command, args []string) {
 
 		fmt.Printf("current account: %v\n", accounts[index].Login)
 
-		psw, err := getPassword()
+		psw, err := getMasterPassword()
 		if err != nil {
 			fmt.Printf("err.Error(): %v\n", err.Error())
 			os.Exit(1)

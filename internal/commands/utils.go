@@ -33,6 +33,8 @@ func getAccountAndPassword(r *Root) (string, string, error) {
 		return "", "", fmt.Errorf("At first you need to initialize your first account")
 	}
 
+	outputItems(accounts)
+
 	accountIndex, err := getChosenItem(accounts)
 	if err != nil {
 		fmt.Printf("Error: %v\n", err.Error())
@@ -41,7 +43,7 @@ func getAccountAndPassword(r *Root) (string, string, error) {
 
 	fmt.Printf("current account: %v\n", accounts[accountIndex].Login)
 
-	psw, err := getPassword()
+	psw, err := getMasterPassword()
 	if err != nil {
 		return "", "", err
 	}
@@ -54,10 +56,10 @@ func getChosenItem(items []domain.UserInfo) (int, error) {
 		return 0, nil
 	}
 
-	fmt.Println("founded rows:")
-	for i, l := range items {
-		fmt.Printf("%v: %v\n", i+1, l.Login)
-	}
+	// fmt.Println("founded rows:")
+	// for i, l := range items {
+	// 	fmt.Printf("%v: %v\n", i+1, l.Login)
+	// }
 
 	fmt.Print("Enter row number: ")
 	chosenItem, err := getInput()
@@ -94,7 +96,7 @@ func getInput() (string, error) {
 	return input, nil
 }
 
-func getPassword() ([]byte, error) {
+func getMasterPassword() ([]byte, error) {
 	fmt.Println("Enter master password for access to account:")
 	psw, err := term.ReadPassword(int(os.Stdin.Fd()))
 	if err != nil {
@@ -102,4 +104,11 @@ func getPassword() ([]byte, error) {
 	}
 
 	return psw, nil
+}
+
+func outputItems(items []domain.UserInfo) {
+	fmt.Println("founded rows:")
+	for i, l := range items {
+		fmt.Printf("%v: %v\n", i+1, l.Login)
+	}
 }
