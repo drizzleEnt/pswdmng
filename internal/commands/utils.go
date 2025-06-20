@@ -28,7 +28,11 @@ func getLoginsAndUrls(r *Root, account string) ([]domain.UserInfo, error) {
 }
 
 func getAccountAndPassword(r *Root) (string, string, error) {
-	ok, accounts := getExistingAccounts(r)
+	ok, accounts, err := getExistingAccounts(r)
+	if err != nil {
+		return "", "", err
+	}
+
 	if !ok {
 		return "", "", fmt.Errorf("At first you need to initialize your first account")
 	}
@@ -37,8 +41,7 @@ func getAccountAndPassword(r *Root) (string, string, error) {
 
 	accountIndex, err := getChosenItem(accounts)
 	if err != nil {
-		fmt.Printf("Error: %v\n", err.Error())
-		os.Exit(1)
+		return "", "", err
 	}
 
 	fmt.Printf("current account: %v\n", accounts[accountIndex].Login)
@@ -56,11 +59,6 @@ func getChosenItem(items []domain.UserInfo) (int, error) {
 		return 0, nil
 	}
 
-	// fmt.Println("founded rows:")
-	// for i, l := range items {
-	// 	fmt.Printf("%v: %v\n", i+1, l.Login)
-	// }
-
 	fmt.Print("Enter row number: ")
 	chosenItem, err := getInput()
 	if err != nil {
@@ -72,18 +70,21 @@ func getChosenItem(items []domain.UserInfo) (int, error) {
 		return 0, err
 	}
 
+	if itemIndex > len(items) {
+		return 0, fmt.Errorf("wrong input number")
+	}
+
 	return itemIndex - 1, nil
 }
 
-func getExistingAccounts(r *Root) (bool, []domain.UserInfo) {
+func getExistingAccounts(r *Root) (bool, []domain.UserInfo, error) {
 	fmt.Println("Check existing passwords files")
 
 	ok, logins, err := r.repo.CheckExist()
 	if err != nil {
-		fmt.Printf("err.Error(): %v\n", err.Error())
-		os.Exit(1)
+		return false, nil, err
 	}
-	return ok, logins
+	return ok, logins, nil
 }
 
 func getInput() (string, error) {

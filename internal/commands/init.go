@@ -2,45 +2,46 @@ package commands
 
 import (
 	"fmt"
-	"os"
 )
 
-func (r *Root) init(isNew bool) {
+func (r *Root) init(isNew bool) error {
 	if isNew {
 		if err := createNewAccount(r); err != nil {
-			fmt.Printf("Error: %v\n", err.Error())
-			os.Exit(1)
+			return err
 		}
-		return
+		return nil
 	}
 
-	ok, accounts := getExistingAccounts(r)
+	ok, accounts, err := getExistingAccounts(r)
+	if err != nil {
+		return err
+	}
 	if !ok {
-		createNewAccount(r)
+		err := createNewAccount(r)
+		if err != nil {
+			return err
+		}
 	} else {
 		outputItems(accounts)
 		index, err := getChosenItem(accounts)
 		if err != nil {
-			fmt.Printf("Error: %v\n", err.Error())
-			os.Exit(1)
+			return err
 		}
 
 		fmt.Printf("current account: %v\n", accounts[index].Login)
 
 		psw, err := getMasterPassword()
 		if err != nil {
-			fmt.Printf("err.Error(): %v\n", err.Error())
-			os.Exit(1)
+			return err
 		}
 		fmt.Printf("psw: %v\n", string(psw))
 
 		if _, err := getLoginsAndUrls(r, accounts[index].Login); err != nil {
-			fmt.Printf("Error: %v\n", err.Error())
-			os.Exit(1)
+			return err
 		}
 
-		return
 	}
+	return nil
 }
 
 func createNewAccount(r *Root) error {
@@ -50,6 +51,13 @@ func createNewAccount(r *Root) error {
 	if err != nil {
 		return err
 	}
+
+	pswd, err := getMasterPassword()
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("pswd: %v\n", pswd)
 
 	if err := r.repo.CreateFile(login); err != nil {
 		return err

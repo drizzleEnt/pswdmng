@@ -1,19 +1,14 @@
 package commands
 
-import (
-	"fmt"
-	"os"
-)
-
-func (r *Root) list(_ []string) {
+func (r *Root) list(_ []string) error {
 	account, _, err := getAccountAndPassword(r)
 	if err != nil {
-		fmt.Printf("Error: %v\n", err.Error())
-		os.Exit(1)
+		return err
 	}
 
 	if _, err := getLoginsAndUrls(r, account); err != nil {
-		fmt.Printf("Error: %v\n", err.Error())
-		os.Exit(1)
+		return err
 	}
+
+	return nil
 }

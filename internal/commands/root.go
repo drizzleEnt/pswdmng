@@ -31,8 +31,9 @@ func (r *Root) Execute() {
 
 func (r *Root) InitCommands() {
 
-	r.rootCmd = factory.MakeRootCommand(func(args []string) {
+	r.rootCmd = factory.MakeRootCommand(func(args []string) error{
 		fmt.Println(args)
+		return nil
 	})
 
 	cmds := []*cobra.Command{

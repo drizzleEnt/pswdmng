@@ -7,67 +7,66 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func MakeRootCommand(incomeFunc func(args []string)) *cobra.Command {
+func MakeRootCommand(incomeFunc func(args []string) error) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "pass",
 		Short: "password manager",
-		Run: func(cmd *cobra.Command, args []string) {
-			incomeFunc(args)
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return incomeFunc(args)
 		},
 	}
 
 	return cmd
 }
 
-func MakeInitCommand(incomeFunc func(bool)) *cobra.Command {
+func MakeInitCommand(incomeFunc func(bool) error) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "init",
 		Short: "Initialize password store",
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			newFlag, err := cmd.Flags().GetBool("new")
 			if err != nil {
 				fmt.Printf("Error: %v\n", err.Error())
 				os.Exit(1)
 			}
-			incomeFunc(newFlag)
-		},
-	}
+			return incomeFunc(newFlag)
+		}}
 	usage := "Create new passwords account"
 	cmd.Flags().BoolP("new", "n", false, usage)
 
 	return cmd
 }
 
-func MakeGetCommand(incomeFunc func([]string)) *cobra.Command {
+func MakeGetCommand(incomeFunc func([]string) error) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get",
 		Short: "get row from password manager",
-		Run: func(cmd *cobra.Command, args []string) {
-			incomeFunc(args)
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return incomeFunc(args)
 		},
 	}
 
 	return cmd
 }
 
-func MakeListCommand(incomeFunc func(args []string)) *cobra.Command {
+func MakeListCommand(incomeFunc func(args []string) error) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "list",
 		Short: "get rows list from password manager",
-		Run: func(cmd *cobra.Command, args []string) {
-			incomeFunc(args)
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return incomeFunc(args)
 		},
 	}
 
 	return cmd
 }
 
-func MakeRemoveCommand(incomeFunc func(args []string)) *cobra.Command {
+func MakeRemoveCommand(incomeFunc func(args []string) error) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "remove",
 		Short: "remove row from password manager",
-		Run: func(cmd *cobra.Command, args []string) {
-			incomeFunc(args)
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return incomeFunc(args)
 		},
 	}
 
@@ -86,24 +85,24 @@ func MakeLoginCommand(incomeFunc func(args []string)) *cobra.Command {
 	return cmd
 }
 
-func MakeAddCommand(incomeFunc func(string, string)) *cobra.Command {
+func MakeAddCommand(incomeFunc func(string, string) error) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add",
 		Short: "add row in password manager",
-		Run: func(cmd *cobra.Command, args []string) {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			login, err := cmd.Flags().GetString("login")
 			if err != nil {
 				fmt.Printf("err.Error(): %v\n", err.Error())
-				os.Exit(1)
+				return err
 			}
 
 			url, err := cmd.Flags().GetString("url")
 			if err != nil {
 				fmt.Printf("err.Error(): %v\n", err.Error())
-				os.Exit(1)
+				return err
 			}
 
-			incomeFunc(login, url)
+			return incomeFunc(login, url)
 		},
 	}
 
