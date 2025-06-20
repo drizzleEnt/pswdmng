@@ -3,13 +3,10 @@ package commands
 import (
 	"fmt"
 	"os"
-
-	"github.com/spf13/cobra"
 )
 
-func (r *Root) init(cmd *cobra.Command, args []string) {
-	newFlag, _ := cmd.Flags().GetBool("new")
-	if newFlag {
+func (r *Root) init(isNew bool) {
+	if isNew {
 		if err := createNewAccount(r); err != nil {
 			fmt.Printf("Error: %v\n", err.Error())
 			os.Exit(1)
