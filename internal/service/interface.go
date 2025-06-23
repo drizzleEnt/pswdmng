@@ -3,6 +3,6 @@ package service
 type FileService interface {
 }
 
-type Generator interface {
-	
+type PasswordService interface {
+	GetNewPassword(length int) (string, error)
 }

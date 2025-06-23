@@ -4,15 +4,15 @@ import (
 	"pswdmng/internal/service"
 )
 
-var _ service.FileService = (*checkerService)(nil)
+var _ service.FileService = (*fileService)(nil)
 
-type checkerService struct {
+type fileService struct {
 }
 
-func (s *checkerService) ReadEncryptedFile(path string, key []byte) ([]byte, error) {
+func (s *fileService) ReadEncryptedFile(path string, key []byte) ([]byte, error) {
 	return nil, nil
 }
 
-func (s *checkerService) WriteEncryptedFile(path string, data, key []byte) error {
+func (s *fileService) WriteEncryptedFile(path string, data, key []byte) error {
 	return nil
 }

@@ -43,7 +43,7 @@ func (r *repo) CreateFile(login string) error {
 }
 
 // Add implements repository.Repository.
-func (r *repo) Add(account string, login string, url string, psw string) error {
+func (r *repo) Add(account string, userInfo domain.UserInfo) error {
 	db, err := db(account)
 	if err != nil {
 		return err
@@ -55,7 +55,7 @@ func (r *repo) Add(account string, login string, url string, psw string) error {
 	(login, url, password) 
 	VALUES ($1, $2, $3)`
 
-	_, err = db.Exec(query, login, url, psw)
+	_, err = db.Exec(query, userInfo.Login, userInfo.Url, userInfo.Password)
 	if err != nil {
 		return err
 	}

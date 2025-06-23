@@ -5,19 +5,22 @@ import (
 	"os"
 	"pswdmng/internal/commands/factory"
 	"pswdmng/internal/repository"
+	"pswdmng/internal/service"
 
 	"github.com/spf13/cobra"
 )
 
-func New(r repository.Repository) *Root {
+func New(r repository.Repository, pswSrv service.PasswordService) *Root {
 	root := &Root{
-		repo: r,
+		repo:    r,
+		pswSrv:  pswSrv,
 	}
 
 	return root
 }
 
 type Root struct {
+	pswSrv service.PasswordService
 	repo    repository.Repository
 	rootCmd *cobra.Command
 	cmds    []*cobra.Command

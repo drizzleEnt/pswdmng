@@ -4,7 +4,7 @@ import "pswdmng/internal/app"
 
 func main() {
 	a := app.New(
-		app.WhithStorePath(""),
+		app.WithStorePath(""),
 	)
 	a.Run()
 }
